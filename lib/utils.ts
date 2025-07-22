@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export type SearchGroupId = 'web' | 'x' | 'academic' | 'youtube' | 'reddit' | 'analysis' | 'chat' | 'memory' | 'crypto' | 'lcx';
+export type SearchGroupId = 'web' | 'x' | 'academic' | 'youtube' | 'reddit' | 'analysis' | 'chat' | 'memory' | 'crypto' | 'lcx' | 'coingecko' | 'extreme';
 
 // Custom icon for LCX Exchange
 const LCXToolIcon = (props: any) => React.createElement('img', { src: '/toolicon.svg', alt: 'LCX Exchange', className: 'h-7 w-7', style: { width: 24, height: 24, ...(props.style || {}) }, ...props });

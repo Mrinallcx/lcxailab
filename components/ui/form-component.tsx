@@ -796,7 +796,6 @@ const GroupModeToggle: React.FC<GroupSelectorProps> = React.memo(({ selectedGrou
       searchGroups.filter((group) => {
         if (!group.show) return false;
         if ('requireAuth' in group && group.requireAuth && !session) return false;
-        if (group.id === 'extreme') return false; // Exclude extreme from dropdown
         return true;
       }),
     [session],

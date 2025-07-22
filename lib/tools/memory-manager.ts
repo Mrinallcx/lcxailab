@@ -20,7 +20,7 @@ export const memoryManagerTool = tool({
     content?: string;
     query?: string;
   }) => {
-    const client = new MemoryClient({ apiKey: serverEnv.MEM0_API_KEY });
+    const client = new MemoryClient({ apiKey: serverEnv.MEM0_API_KEY || "" });
     const user = await getCurrentUser();
     let userId = user?.id;
     console.log('action', action);

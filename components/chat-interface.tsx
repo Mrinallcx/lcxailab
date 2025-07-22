@@ -587,7 +587,7 @@ const ChatInterface = memo(
             {status === 'ready' && messages.length === 0 && (
               <div className="flex flex-col items-center justify-center m-0 mb-16 w-full">
                 <img src="/lcxaiLab.svg" alt="LCX AI Labs" className="h-12 sm:h-16 w-auto mx-auto" />
-                <div className="text-sm text-muted-foreground mt-2 text-center">A unified crypto search engine</div>
+                <div className="text-sm text-muted-foreground mt-2 text-center">AI powered finance & crypto search engine</div>
               </div>
             )}
 

@@ -41,9 +41,9 @@ export default function TermsPage() {
               <Link href="/" className="inline-flex items-center gap-3 font-be-vietnam-pro font-bold">
                 <div className="relative w-14 h-14 rounded-full bg-white/90 dark:bg-black/90 shadow-sm flex items-center justify-center border border-neutral-200 dark:border-neutral-800">
                   <NextImage
-                    src="/scira.png"
-                    alt="Scira Logo"
-                    className="h-8 w-8 opacity-90 invert dark:invert-0"
+                    src="/searchlogo.svg"
+                    alt="LCX AI"
+                    className="h-8 w-8 opacity-90"
                     width={32}
                     height={32}
                     unoptimized
@@ -247,9 +247,9 @@ export default function TermsPage() {
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center justify-center">
                 <NextImage
-                  src="/scira.png"
-                  alt="Scira Logo"
-                  className="h-4 w-4 opacity-80 invert dark:invert-0"
+                  src="/searchlogo.svg"
+                  alt="LCX AI"
+                  className="h-4 w-4 opacity-80"
                   width={16}
                   height={16}
                   unoptimized

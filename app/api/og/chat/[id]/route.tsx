@@ -17,7 +17,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const bgImageBase64 = `data:image/png;base64,${bgImageData.toString('base64')}`;
 
     // Read the Scira logo
-    const logoPath = path.join(process.cwd(), 'public', 'scira.png');
+    const logoPath = path.join(process.cwd(), 'public', 'searchlogo.svg');
     const logoData = await fs.promises.readFile(logoPath);
     const logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`;
 
@@ -72,7 +72,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                 src={logoBase64}
                 width={140}
                 height={140}
-                alt="Scira AI"
+                alt="LCX AI"
                 style={{
                   objectFit: 'contain',
                   marginBottom: 28,
@@ -87,7 +87,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                   fontFamily: 'Syne',
                 }}
               >
-                Scira AI
+                LCX AI
               </div>
             </div>
           </div>
@@ -169,7 +169,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                 src={logoBase64}
                 width={80}
                 height={80}
-                alt="Scira AI"
+                alt="LCX AI"
                 style={{
                   objectFit: 'contain',
                 }}
@@ -185,7 +185,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                     lineHeight: 1,
                   }}
                 >
-                  Scira AI
+                  LCX AI
                 </div>
                 <div
                   style={{

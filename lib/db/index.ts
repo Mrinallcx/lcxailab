@@ -4,7 +4,7 @@ import * as schema from "@/lib/db/schema";
 import { serverEnv } from "@/env/server";
 
 // Unified connection with optimized pooling
-const client = postgres(serverEnv.DATABASE_URL, {
+const client = postgres(serverEnv.DATABASE_URL || "", {
   max: 50,
   idle_timeout: 20,
   connect_timeout: 10,

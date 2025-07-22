@@ -204,11 +204,11 @@ export default function AboutPage() {
         <div className="container max-w-screen-xl mx-auto py-4 px-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/scira.png"
-              alt="Scira"
+              src="/searchlogo.svg"
+              alt="LCX AI Labs"
               width={100}
               height={100}
-              className="size-7 invert dark:invert-0"
+              className="size-7"
               quality={100}
             />
                             <span className="font-normal font-be-vietnam-pro">LCX AI Labs</span>
@@ -249,11 +249,11 @@ export default function AboutPage() {
               <Link href="/" className="inline-flex items-center gap-2 group">
                 <div className="relative">
                   <Image
-                    src="/scira.png"
-                    alt="Scira"
+                    src="/searchlogo.svg"
+                    alt="LCX AI Labs"
                     width={100}
                     height={100}
-                    className="size-16 invert dark:invert-0 transition-all duration-300 group-hover:scale-110"
+                    className="size-16 transition-all duration-300 group-hover:scale-110"
                     quality={100}
                   />
                 </div>
@@ -1143,7 +1143,7 @@ export default function AboutPage() {
         <div className="container max-w-screen-xl mx-auto py-12 px-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <Image src="/scira.png" alt="Scira" width={32} height={32} className="h-8 w-8 invert dark:invert-0" />
+              <Image src="/searchlogo.svg" alt="LCX AI" width={32} height={32} className="h-8 w-8" />
               <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} All rights reserved.</p>
             </div>
 

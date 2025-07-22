@@ -42,16 +42,16 @@ interface MessagesProps {
 const SciraLogoHeader = () => (
   <div className="flex items-center gap-2 my-1.5">
     <Image
-      src="/scira.png"
-      alt="Scira"
-      className="size-7 invert dark:invert-0"
+      src="/searchlogo.svg"
+      alt="LCX AI"
+      className="size-7"
       width={100}
       height={100}
       unoptimized
       quality={100}
       priority
     />
-    <h2 className="text-xl font-normal font-be-vietnam-pro text-foreground dark:text-foreground">Scira</h2>
+    <h2 className="text-xl font-normal font-be-vietnam-pro text-foreground dark:text-foreground">LCX AI</h2>
   </div>
 );
 

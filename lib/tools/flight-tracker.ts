@@ -25,8 +25,8 @@ export const flightTrackerTool = tool({
       },
       body: new URLSearchParams({
         grant_type: 'client_credentials',
-        client_id: serverEnv.AMADEUS_API_KEY,
-        client_secret: serverEnv.AMADEUS_API_SECRET,
+        client_id: serverEnv.AMADEUS_API_KEY || "",
+        client_secret: serverEnv.AMADEUS_API_SECRET || "",
       }),
     });
 
