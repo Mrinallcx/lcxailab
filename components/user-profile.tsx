@@ -117,6 +117,7 @@ const UserProfile = memo(
         <DropdownMenu>
           <Tooltip>
             <TooltipTrigger asChild>
+              {/* Info button disabled for now
               <DropdownMenuTrigger asChild>
                 {isAuthenticated ? (
                   <Button
@@ -125,7 +126,6 @@ const UserProfile = memo(
                     className={cn('p-0! m-0! focus:!outline-0 focus:!ring-0', signingOut && 'animate-pulse', className)}
                     asChild
                   >
-                    {/* Replace Avatar with Info icon */}
                     <Info className="size-7 text-foreground" />
                   </Button>
                 ) : (
@@ -138,6 +138,7 @@ const UserProfile = memo(
                   </Button>
                 )}
               </DropdownMenuTrigger>
+              */}
             </TooltipTrigger>
             <TooltipContent side="bottom" sideOffset={4}>
               {isAuthenticated ? 'Account' : 'Sign In'}
