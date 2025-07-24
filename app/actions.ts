@@ -266,6 +266,18 @@ const groupTools = {
   memory: ['memory_manager', 'datetime'] as const,
   // Add legacy mapping for backward compatibility
   buddy: ['memory_manager', 'datetime'] as const,
+  binance: [
+    'binance_ticker',
+    'binance_klines',
+    'binance_order_book',
+    'binance_recent_trades',
+    'binance_exchange_info',
+    'datetime',
+  ] as const,
+  masterdex: [
+    'masterdex_big_swaps',
+    'datetime',
+  ] as const,
 } as const;
 
 const groupInstructions = {
@@ -1054,6 +1066,20 @@ RESTRICTIONS:
 - No direct investment advice
 - No verbose explanations
 - No repetitive calls`,
+  binance: `
+  You are a Binance market data assistant. Run the appropriate Binance tool IMMEDIATELY when the user sends any message. Respond in markdown format. Do not ask for clarification before running the tool. Use the following tools:
+  - binance_ticker: Get the latest ticker price for a symbol (e.g., BTCUSDT).
+  - binance_klines: Get candlestick (OHLCV) data for a symbol and interval.
+  - binance_order_book: Get the order book (bids/asks) for a symbol.
+  - binance_recent_trades: Get recent trades for a symbol.
+  - binance_exchange_info: Get exchange info and the list of all trading pairs.
+  - datetime: Use only if the user asks for date/time.
+  Always run the tool first, then answer. Do not include images. Use markdown tables for data if appropriate.`,
+  masterdex: `
+  You are a MasterDex big swaps assistant. Run the masterdex_big_swaps tool IMMEDIATELY when the user sends any message. Respond in markdown format. Do not ask for clarification before running the tool. Use the following tool:
+  - masterdex_big_swaps: Fetch big swaps (large trades) happening on Base from MasterDex.
+  - datetime: Use only if the user asks for date/time.
+  Always run the tool first, then answer. Do not include images. Use markdown tables for data if appropriate.`,
 };
 
 export async function getGroupConfig(groupId: LegacyGroupId = 'web') {

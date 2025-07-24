@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export type SearchGroupId = 'web' | 'x' | 'academic' | 'youtube' | 'reddit' | 'analysis' | 'chat' | 'memory' | 'crypto' | 'lcx' | 'coingecko' | 'extreme';
+export type SearchGroupId = 'web' | 'x' | 'academic' | 'youtube' | 'reddit' | 'analysis' | 'chat' | 'memory' | 'crypto' | 'lcx' | 'coingecko' | 'extreme' | 'binance' | 'masterdex';
 
 // Custom icon for LCX Exchange
 const LCXToolIcon = (props: any) => React.createElement('img', { src: '/toolicon.svg', alt: 'LCX Exchange', className: 'h-7 w-7', style: { width: 24, height: 24, ...(props.style || {}) }, ...props });
@@ -17,6 +17,10 @@ const LCXToolIcon = (props: any) => React.createElement('img', { src: '/toolicon
 const CoinGeckoIcon = (props: any) => React.createElement('img', { src: '/coingecko.svg', alt: 'CoinGecko', className: 'h-7 w-7', style: { width: 22, height: 22, ...(props.style || {}) }, ...props });
 // Custom icon for Yahoo (Analysis)
 const YahooIcon = (props: any) => React.createElement('img', { src: '/yahoo.svg', alt: 'Yahoo', className: 'h-7 w-7', style: { width: 20, height: 20, ...(props.style || {}) }, ...props });
+// Custom icon for Binance
+const BinanceIcon = (props: any) => React.createElement('img', { src: '/binance-logo.svg', alt: 'Binance', className: 'h-7 w-7', style: { width: 20, height: 20, ...(props.style || {}) }, ...props });
+// Custom icon for MasterDex
+const MasterDexIcon = (props: any) => React.createElement('img', { src: '/Masterdex.svg', alt: 'MasterDex', className: 'h-7 w-7', style: { width: 22, height: 22, ...(props.style || {}) }, ...props });
 
 export const searchGroups = [
   // Web, X & Reddit
@@ -58,6 +62,22 @@ export const searchGroups = [
     name: 'LCX Exchange',
     description: 'Real time trading data',
     icon: LCXToolIcon,
+    show: true,
+    category: 'Crypto & Finance',
+  },
+  {
+    id: 'binance' as const,
+    name: 'Binance',
+    description: 'Binance market data',
+    icon: BinanceIcon,
+    show: true,
+    category: 'Crypto & Finance',
+  },
+  {
+    id: 'masterdex' as const,
+    name: 'MasterDex',
+    description: 'Big swaps on Base (MasterDex)',
+    icon: MasterDexIcon,
     show: true,
     category: 'Crypto & Finance',
   },

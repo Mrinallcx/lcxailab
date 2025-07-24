@@ -22,3 +22,5 @@ export { memoryManagerTool } from './memory-manager';
 export { redditSearchTool } from './reddit-search'; 
 export { extremeSearchTool } from './extreme-search';
 export { greetingTool } from './greeting';
+export { binanceTickerTool, binanceKlinesTool, binanceOrderBookTool, binanceRecentTradesTool, binanceExchangeInfoTool } from './binance-tools';
+export { masterdexBigSwapsTool } from './masterdex-tools';

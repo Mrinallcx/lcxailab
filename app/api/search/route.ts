@@ -83,6 +83,12 @@ import {
   memoryManagerTool,
   redditSearchTool,
   extremeSearchTool,
+  binanceTickerTool,
+  binanceKlinesTool,
+  binanceOrderBookTool,
+  binanceRecentTradesTool,
+  binanceExchangeInfoTool,
+  masterdexBigSwapsTool,
 } from '@/lib/tools';
 
 type ResponseMessageWithoutId = CoreToolMessage | CoreAssistantMessage;
@@ -446,6 +452,14 @@ export async function POST(req: Request) {
           memory_manager: memoryManagerTool,
           extreme_search: extremeSearchTool(dataStream),
           greeting: greetingTool,
+          // Binance Tools
+          binance_ticker: binanceTickerTool,
+          binance_klines: binanceKlinesTool,
+          binance_order_book: binanceOrderBookTool,
+          binance_recent_trades: binanceRecentTradesTool,
+          binance_exchange_info: binanceExchangeInfoTool,
+          // MasterDex Tool
+          masterdex_big_swaps: masterdexBigSwapsTool,
         },
         experimental_repairToolCall: async ({ toolCall, tools, parameterSchema, error }) => {
           if (NoSuchToolError.isInstance(error)) {
