@@ -703,6 +703,13 @@ const ChatInterface = memo(
                   }}
                   isLimitBlocked={isLimitBlocked}
                 />
+                {!user && (
+                  <div className="mt-2 text-center">
+                    <p className="text-xs text-muted-foreground">
+                      Daily limit: {SEARCH_LIMITS.DAILY_SEARCH_LIMIT} searches
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
