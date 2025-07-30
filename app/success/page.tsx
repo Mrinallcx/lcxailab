@@ -59,7 +59,7 @@ export default function SuccessPage() {
         </div>
 
         {/* Content */}
-        <h1 className="text-2xl font-light text-foreground mb-4 tracking-tight">Welcome to LCX AI Labs Pro</h1>
+        <h1 className="text-2xl font-light text-foreground mb-4 tracking-tight">Welcome to BharatX AI Pro</h1>
         <p className="text-muted-foreground mb-8">Your subscription is active. Start unlimited searching.</p>
 
         {/* Action */}

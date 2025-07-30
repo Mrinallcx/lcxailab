@@ -43,15 +43,15 @@ const SciraLogoHeader = () => (
   <div className="flex items-center gap-2 my-1.5">
     <Image
       src="/searchlogo.svg"
-      alt="LCX AI"
-      className="size-7"
-      width={100}
-      height={100}
+      alt="BharatX AI"
+      className="size-5"
+      width={60}
+      height={60}
       unoptimized
       quality={100}
       priority
     />
-    <h2 className="text-xl font-normal font-be-vietnam-pro text-foreground dark:text-foreground">LCX AI</h2>
+    <h2 className="text-xl font-normal font-syne text-foreground dark:text-foreground">BharatX Ai</h2>
   </div>
 );
 

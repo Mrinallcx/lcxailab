@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next'
  
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "LCXAILAB - AI-powered Crypto Search Engine",
-    short_name: "LCXAILAB",
-    description: "An AI-powered crypto search engine that helps you find information on the internet using advanced AI models like GPT-4, Claude, and Grok",
+    name: "BharatX - AI-powered Crypto Search Engine",
+    short_name: "BharatX",
+    description: "BharatX is an AI-powered crypto search engine that helps you find information on the internet using advanced AI models like GPT-4, Claude, and Grok",
     start_url: "/",
     display: "standalone",
     categories: ["search", "ai", "productivity"],

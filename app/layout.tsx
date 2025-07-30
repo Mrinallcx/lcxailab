@@ -15,20 +15,20 @@ import { Providers } from './providers';
 export const metadata: Metadata = {
   metadataBase: new URL('https://lcx.ai'),
   title: {
-    default: 'LCX AI Lab',
-    template: '%s | LCX AI Lab',
-    absolute: 'LCX AI Lab',
+    default: 'BharatX',
+    template: '%s | BharatX',
+    absolute: 'BharatX',
   },
   description: 'Crypto Search Engine',
   openGraph: {
     url: 'https://lcx.ai',
-    siteName: 'LCX AI Lab',
+    siteName: 'BharatX',
   },
   keywords: [
-    'lcx.ai',
+    'bharatx',
     'crypto search engine',
-    'lcx ai lab',
-    'LCX AI Lab',
+    'bharatx ai',
+    'BharatX',
     'open source ai search engine',
     'minimalistic ai search engine',
     'minimalistic ai search alternatives',

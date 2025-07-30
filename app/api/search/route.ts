@@ -45,8 +45,9 @@ import { auth } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { geolocation } from '@vercel/functions';
 import { getGuestUsageCount, incrementGuestUsage } from '@/lib/db/queries';
+import { SEARCH_LIMITS } from '@/lib/constants';
 
-const GUEST_DAILY_LIMIT = 10; // Guest users get 10 searches per day
+const GUEST_DAILY_LIMIT = SEARCH_LIMITS.DAILY_SEARCH_LIMIT; // Guest users get the configured number of searches per day
 
 // Import all tools from the organized tool files
 import {

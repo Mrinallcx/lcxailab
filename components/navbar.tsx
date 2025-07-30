@@ -128,7 +128,7 @@ const Navbar = memo(
               type="button"
               variant="secondary"
               size="sm"
-              className="rounded-lg bg-[#2C6BFF] hover:bg-[#2C6BFF]/90 group transition-all hover:scale-105 pointer-events-auto border-none shadow-md"
+              className="rounded-lg bg-[#E633FC] hover:bg-[#E633FC]/90 group transition-all hover:scale-105 pointer-events-auto border-none shadow-md"
             >
               <Plus size={16} className="text-white group-hover:rotate-90 transition-all" />
               <span className="text-sm ml-1.5 text-white group-hover:block hidden animate-in fade-in duration-300">New</span>

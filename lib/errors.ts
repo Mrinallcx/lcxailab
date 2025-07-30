@@ -194,7 +194,7 @@ export function getErrorActions(error: ChatSDKError): {
 
   if (isRateLimited(error)) {
     return {
-      primary: { label: 'Visit LCX AI Lab', action: 'visit_lab' },
+      primary: { label: 'Visit BharatX AI', action: 'visit_lab' },
       secondary: { label: 'Try Again Later', action: 'retry' }
     };
   }

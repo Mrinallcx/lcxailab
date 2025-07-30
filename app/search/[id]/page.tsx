@@ -19,9 +19,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const id = (await params).id;
   const chat = await getChatById({ id });
   const user = await getUser();
-  // if not chat, return LCX AI Labs Chat
+  // if not chat, return BharatX Chat
   if (!chat) {
-    return { title: 'LCX AI Labs Chat' };
+    return { title: 'BharatX Chat' };
   }
   let title;
   // if chat is public, return title
@@ -31,10 +31,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // if chat is private, return title
   if (chat.visibility === 'private') {
     if (!user) {
-      title = 'LCX AI Labs Chat';
+      title = 'BharatX Chat';
     }
     if (user!.id !== chat.userId) {
-      title = 'LCX AI Labs Chat';
+      title = 'BharatX Chat';
     }
     title = chat.title;
   }

@@ -341,7 +341,7 @@ export default function PricingTable({ subscriptionDetails }: PricingTableProps)
             <div className="bg-white dark:bg-zinc-900 border-[1.5px] border-black dark:border-white rounded-xl p-10 relative shadow-sm">
               <div className="mb-10">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 tracking-[-0.01em]">LCX AI Labs Pro</h3>
+                  <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 tracking-[-0.01em]">BharatX AI Pro</h3>
                   <Badge
                     variant="secondary"
                     className="bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-normal px-2.5 py-1"
@@ -408,7 +408,7 @@ export default function PricingTable({ subscriptionDetails }: PricingTableProps)
                   className="w-full h-9 bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black group font-normal text-sm tracking-[-0.01em] transition-all duration-200"
                   onClick={() => handleCheckout(STARTER_TIER, STARTER_SLUG)}
                 >
-                  {isAuthenticated === false ? 'Sign in to upgrade' : 'Upgrade to LCX AI Labs Pro'}
+                  {isAuthenticated === false ? 'Sign in to upgrade' : 'Upgrade to BharatX AI Pro'}
                   <ArrowRight className="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
                 </Button>
               )}
