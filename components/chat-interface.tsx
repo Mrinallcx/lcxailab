@@ -586,7 +586,7 @@ const ChatInterface = memo(
           <div className={`w-full max-w-[95%] sm:max-w-2xl space-y-6 p-0 mx-auto transition-all duration-300`}>
             {status === 'ready' && messages.length === 0 && (
               <div className="flex flex-col items-center justify-center m-0 mb-16 w-full">
-                <img src="/bhex-logo.webp" alt="BHEX Logo" className="h-8 sm:h-10 w-auto mx-auto" />
+                <img src="/LCXLogo.svg" alt="LCX Logo" className="h-10 sm:h-12 w-auto mx-auto" />
                 <div className="text-sm text-muted-foreground mt-2 text-center font-syne">AI powered finance & crypto search engine</div>
               </div>
             )}

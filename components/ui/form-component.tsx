@@ -154,7 +154,7 @@ const ModelSwitcher: React.FC<ModelSwitcherProps> = React.memo(
                 className,
               )}
             >
-              <Cpu className="h-4 w-4 text-[#E633FC]" />
+              <Cpu className="h-4 w-4 text-[#0E69FF]" />
               <span className="text-xs font-medium sm:block hidden">{currentModel?.label || 'Select Model'}</span>
               <ChevronsUpDown className="h-4 w-4 opacity-50" />
             </Button>

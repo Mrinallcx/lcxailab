@@ -96,7 +96,7 @@ const EnhancedErrorDisplay: React.FC<EnhancedErrorDisplayProps> = ({
       case 'upgrade':
         return <Crown className="h-4 w-4 text-amber-500 dark:text-amber-300" weight="fill" />;
       case 'limit':
-        return <AlertTriangle className="h-4 w-4 text-purple-500 dark:text-purple-400" />;
+        return <AlertTriangle className="h-4 w-4 text-blue-500 dark:text-blue-400" />;
       case 'warning':
         return <AlertCircle className="h-4 w-4 text-orange-500 dark:text-orange-300" />;
       default:
@@ -127,12 +127,12 @@ const EnhancedErrorDisplay: React.FC<EnhancedErrorDisplayProps> = ({
         };
       case 'limit':
         return {
-          bg: 'bg-purple-50 dark:bg-purple-950/20',
-          border: 'border-purple-200 dark:border-purple-800',
-          iconBg: 'bg-purple-100 dark:bg-purple-900/30',
-          title: 'text-purple-800 dark:text-purple-200',
-          text: 'text-purple-700 dark:text-purple-300',
-          button: 'bg-[#E633FC] hover:bg-purple-700 text-white',
+          bg: 'bg-blue-50 dark:bg-blue-950/20',
+          border: 'border-blue-200 dark:border-blue-800',
+          iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+          title: 'text-blue-800 dark:text-blue-200',
+          text: 'text-blue-700 dark:text-blue-300',
+          button: 'bg-blue-600 hover:bg-blue-700 text-white',
         };
       case 'warning':
         return {
@@ -228,7 +228,7 @@ const EnhancedErrorDisplay: React.FC<EnhancedErrorDisplayProps> = ({
             <p className="text-muted-foreground dark:text-muted-foreground text-xs">
               {!user && selectedVisibilityType === 'public'
                 ? 'Please sign in to retry or try a different prompt'
-                : 'You can retry your request later or visit BharatX AI'}
+                : 'You can retry your request later or visit LCX AI'}
             </p>
             <div className="flex gap-2">
               {actions.secondary && canPerformAction(actions.secondary.action) && (
@@ -245,10 +245,10 @@ const EnhancedErrorDisplay: React.FC<EnhancedErrorDisplayProps> = ({
               {actions.primary && canPerformAction(actions.primary.action) && (
                 <Button onClick={() => handleAction(actions.primary!.action)} className={colors.button} size="sm">
                   {actions.primary.action === 'signin' && <LogIn className="mr-2 h-3.5 w-3.5" />}
-                  {actions.primary.action === 'upgrade' && <img src="/searchlogowhite.svg" alt="BharatX AI Logo" className="mr-1 h-6 w-6" />}
-                  {actions.primary.action === 'visit_lab' && <img src="/whitebhx.svg" alt="BharatX Logo" className="mr-1 h-4 w-4" />}
+                  {actions.primary.action === 'upgrade' && <img src="/searchlogowhite.svg" alt="LCX AI Logo" className="mr-1 h-6 w-6" />}
+                  {actions.primary.action === 'visit_lab' && <img src="/icon.svg" alt="LCX Logo" className="mr-1 h-4 w-4" />}
                   {actions.primary.action === 'retry' && <RefreshCw className="mr-2 h-3.5 w-3.5" />}
-                  {actions.primary.action === 'visit_lab' ? 'BharatX' : actions.primary.label}
+                  {actions.primary.action === 'visit_lab' ? 'LCX' : actions.primary.label}
                 </Button>
               )}
             </div>

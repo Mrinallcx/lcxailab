@@ -15,20 +15,20 @@ import { Providers } from './providers';
 export const metadata: Metadata = {
   metadataBase: new URL('https://lcx.ai'),
   title: {
-    default: 'BharatX',
-    template: '%s | BharatX',
-    absolute: 'BharatX',
+    default: 'LCX',
+    template: '%s | LCX',
+    absolute: 'LCX',
   },
   description: 'Crypto Search Engine',
   openGraph: {
     url: 'https://lcx.ai',
-    siteName: 'BharatX',
+    siteName: 'LCX',
   },
   keywords: [
-    'bharatx',
+    'lcx',
     'crypto search engine',
-    'bharatx ai',
-    'BharatX',
+    'lcx ai',
+    'LCX',
     'open source ai search engine',
     'minimalistic ai search engine',
     'minimalistic ai search alternatives',
@@ -77,7 +77,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/faviocn.svg" type="image/svg+xml" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
       </head>
       <body className={`${geist.variable} ${beVietnamPro.variable} font-sans antialiased`} suppressHydrationWarning>
         <NuqsAdapter>
