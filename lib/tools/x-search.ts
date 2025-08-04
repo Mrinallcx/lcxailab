@@ -6,24 +6,24 @@ import { getTweet } from 'react-tweet/api';
 export const xSearchTool = tool({
   description: 'Search X (formerly Twitter) posts using xAI Live Search.',
   parameters: z.object({
-    query: z.string().describe('The search query for X posts').nullable(),
+    query: z.string().describe('The search query for X posts'),
     startDate: z
       .string()
-      .nullable()
+      .optional()
       .describe(
         'The start date of the search in the format YYYY-MM-DD (default to 7 days ago if not specified)',
       ),
     endDate: z
       .string()
-      .nullable()
+      .optional()
       .describe('The end date of the search in the format YYYY-MM-DD (default to today if not specified)'),
     xHandles: z
       .array(z.string())
-      .nullable()
+      .optional()
       .describe(
         'Optional list of X handles/usernames to search from (without @ symbol). Only include if user explicitly mentions specific handles like "@elonmusk" or "@openai"',
       ),
-    maxResults: z.number().nullable().describe('Maximum number of search results to return (default 15)'),
+    maxResults: z.number().optional().describe('Maximum number of search results to return (default 15)'),
   }),
   execute: async ({
     query,
@@ -32,18 +32,23 @@ export const xSearchTool = tool({
     xHandles,
     maxResults = 15,
   }: {
-    query: string | null;
-    startDate: string | null;
-    endDate: string | null;
-    xHandles: string[] | null;
-    maxResults: number | null;
+    query: string;
+    startDate?: string;
+    endDate?: string;
+    xHandles?: string[];
+    maxResults?: number;
   }) => {
     try {
+      // Set default dates if not provided
+      const defaultStartDate = startDate || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const defaultEndDate = endDate || new Date().toISOString().split('T')[0];
+      const defaultMaxResults = maxResults || 15;
+
       const searchParameters: any = {
         mode: 'on',
-        ...(startDate && { from_date: startDate }),
-        ...(endDate && { to_date: endDate }),
-        ...(maxResults && { max_search_results: maxResults }),
+        from_date: defaultStartDate,
+        to_date: defaultEndDate,
+        max_search_results: defaultMaxResults,
         return_citations: true,
         sources: [
           xHandles && xHandles.length > 0
