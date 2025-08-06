@@ -39,16 +39,128 @@ interface MasterDexTrade {
   chain: string;
 }
 
+// Helper function to fetch with retry logic
+async function fetchWithRetry(url: string, maxRetries: number = 3, delay: number = 1000): Promise<Response> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'LCX-AI-Lab/1.0',
+          'Accept': 'application/json',
+        },
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        return response;
+      }
+      
+      // If response is not ok, throw error to trigger retry
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      
+    } catch (error) {
+      const isLastAttempt = attempt === maxRetries;
+      const isConnectionError = error instanceof Error && (
+        error.message.includes('ECONNRESET') ||
+        error.message.includes('ENOTFOUND') ||
+        error.message.includes('ETIMEDOUT') ||
+        error.message.includes('fetch') ||
+        error.name === 'AbortError'
+      );
+      
+      if (isLastAttempt) {
+        throw new Error(`Failed after ${maxRetries} attempts. Last error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+      
+      if (isConnectionError) {
+        console.log(`Attempt ${attempt} failed with connection error, retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2; // Exponential backoff
+      } else {
+        // Non-connection errors don't need retry
+        throw error;
+      }
+    }
+  }
+  
+  throw new Error('Unexpected error in fetchWithRetry');
+}
+
+// Helper function to format trade data for better readability
+function formatTradeData(trade: MasterDexTrade) {
+  return {
+    // Basic trade info
+    pair: `${trade.symbol0}/${trade.symbol1}`,
+    type: trade.transType, // Buy/Sell
+    value: `$${trade.tnxvalue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    
+    // Token amounts
+    amountBase: trade.amountBase,
+    amountQuote: trade.amountQuote,
+    
+    // Price information
+    price: trade.price,
+    token0Price: trade.token0Price,
+    token1Price: trade.token1Price,
+    
+    // Transaction details
+    account: trade.account,
+    transactionHash: trade.txnDetail,
+    blockNumber: trade.blockNumber,
+    
+    // Time and chain
+    time: new Date(trade.time).toLocaleString(),
+    age: getTimeAgo(trade.time),
+    chain: trade.chain,
+    
+    // Additional info
+    isBotTrade: trade.bottrade,
+    pairId: trade.pairId,
+    feeTier: trade.feeTier,
+    
+    // Raw data for advanced use
+    raw: trade
+  };
+}
+
+// Helper function to calculate time ago
+function getTimeAgo(timeString: string): string {
+  const now = new Date();
+  const time = new Date(timeString);
+  const diffInSeconds = Math.floor((now.getTime() - time.getTime()) / 1000);
+  
+  if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+  return `${Math.floor(diffInSeconds / 86400)}d ago`;
+}
+
+// Helper function to get unique symbols from data
+function getUniqueSymbols(trades: MasterDexTrade[]): string[] {
+  const symbols = new Set<string>();
+  trades.forEach(trade => {
+    if (trade.symbol0) symbols.add(trade.symbol0);
+    if (trade.symbol1) symbols.add(trade.symbol1);
+  });
+  return Array.from(symbols).sort();
+}
+
 export const masterdexBigSwapsTool = tool({
-  description: 'Fetch big swaps (large trades) happening on multiple blockchains from MasterDex. Supports Ethereum, Base, Optimism, Polygon, Arbitrum, BNB, and Blast. Optionally filter by token symbol, pair, chain, and minimum value.',
+  description: 'Fetch big swaps (large trades) happening on multiple blockchains from MasterDex. Supports Ethereum, Base, Optimism, Polygon, Arbitrum, BNB, and Blast. Returns detailed information including pair name, trade type (buy/sell), price, value, amounts, wallet address, transaction hash, and more.',
   parameters: z.object({
     chain: z.enum(['ethereum', 'base', 'optimism', 'polygon', 'arbitrum', 'bnb', 'blast']).optional().describe('Blockchain to fetch data from. If not specified, returns data from all supported chains.'),
-    token: z.string().optional().describe('Token symbol to filter for (case-insensitive, substring match, matches either side of the pair)'),
+    token: z.string().optional().describe('Token symbol to filter for (case-insensitive, matches either side of the pair)'),
     pair: z.string().optional().describe('Pair symbol to filter for, e.g., USDC/WETH (case-insensitive, any order)'),
     minValue: z.number().optional().describe('Minimum transaction value in USD'),
-    limit: z.number().optional().describe('Maximum number of results to return'),
+    limit: z.number().optional().describe('Maximum number of results to return (default: 20)'),
+    tradeType: z.enum(['buy', 'sell']).optional().describe('Filter by trade type: buy or sell'),
   }),
-  execute: async ({ chain, token, pair, minValue, limit }: { chain?: string; token?: string; pair?: string; minValue?: number; limit?: number }) => {
+  execute: async ({ chain, token, pair, minValue, limit = 20, tradeType }: { chain?: string; token?: string; pair?: string; minValue?: number; limit?: number; tradeType?: string }) => {
     try {
       // Determine the API endpoint based on whether a specific chain is requested
       let url: string;
@@ -60,43 +172,73 @@ export const masterdexBigSwapsTool = tool({
         url = 'https://api.masterdex.xyz/v1/pairs/getbigSwaps';
       }
 
-      const response = await fetch(url);
+      console.log(`🔍 Fetching MasterDex data from: ${url}`);
+      console.log(`📋 Filters: chain=${chain || 'all'}, token=${token || 'none'}, pair=${pair || 'none'}, minValue=${minValue || 'none'}, tradeType=${tradeType || 'all'}`);
       
-      if (!response.ok) {
-        throw new Error(`MasterDex API error: ${response.status} ${response.statusText}`);
-      }
-      
+      const response = await fetchWithRetry(url);
       const data = await response.json();
-      let results: MasterDexTrade[] = data.data;
-
-      // If using multi-chain endpoint, filter by chain if specified
-      if (!chain && url === 'https://api.masterdex.xyz/v1/pairs/getbigSwaps') {
-        // This case shouldn't happen since we're using chain-specific endpoint when chain is specified
-        // But keeping it for safety
+      
+      if (!data || !data.data || !Array.isArray(data.data)) {
+        throw new Error('Invalid response format from MasterDex API');
       }
+      
+      let results: MasterDexTrade[] = data.data;
+      console.log(`📊 Total trades fetched: ${results.length}`);
 
-      // Filter by token symbol (case-insensitive, substring match, matches either symbol0 or symbol1)
+      // Get available symbols for debugging
+      const availableSymbols = getUniqueSymbols(results);
+      console.log(`🏷️ Available symbols: ${availableSymbols.slice(0, 10).join(', ')}${availableSymbols.length > 10 ? '...' : ''}`);
+
+      // Filter by token symbol (case-insensitive, exact or substring match)
       if (token) {
-        const tokenLower = token.toLowerCase();
-        results = results.filter((trade: MasterDexTrade) =>
-          (trade.symbol0 && trade.symbol0.toLowerCase().includes(tokenLower)) ||
-          (trade.symbol1 && trade.symbol1.toLowerCase().includes(tokenLower))
-        );
+        const tokenLower = token.toLowerCase().trim();
+        const originalCount = results.length;
+        results = results.filter((trade: MasterDexTrade) => {
+          const symbol0Lower = trade.symbol0?.toLowerCase() || '';
+          const symbol1Lower = trade.symbol1?.toLowerCase() || '';
+          const matches = symbol0Lower.includes(tokenLower) || symbol1Lower.includes(tokenLower);
+          return matches;
+        });
+        console.log(`🔍 After token filter (${token}): ${results.length} trades (filtered out ${originalCount - results.length})`);
+        
+        if (results.length === 0) {
+          console.log(`⚠️ No trades found for token "${token}". Available symbols: ${availableSymbols.join(', ')}`);
+        }
       }
 
       // Filter by pair (case-insensitive, matches either order)
       if (pair) {
-        const [a, b] = pair.toLowerCase().split('/');
+        const pairLower = pair.toLowerCase().trim();
+        const [a, b] = pairLower.split('/');
+        const originalCount = results.length;
         results = results.filter((trade: MasterDexTrade) => {
-          const s0 = trade.symbol0?.toLowerCase();
-          const s1 = trade.symbol1?.toLowerCase();
-          return (s0 === a && s1 === b) || (s0 === b && s1 === a);
+          const s0 = trade.symbol0?.toLowerCase() || '';
+          const s1 = trade.symbol1?.toLowerCase() || '';
+          const pairMatch = (s0 === a && s1 === b) || (s0 === b && s1 === a);
+          return pairMatch;
         });
+        console.log(`🔍 After pair filter (${pair}): ${results.length} trades (filtered out ${originalCount - results.length})`);
+        
+        if (results.length === 0) {
+          console.log(`⚠️ No trades found for pair "${pair}". Available pairs: ${availableSymbols.slice(0, 5).join('/')}, etc.`);
+        }
+      }
+
+      // Filter by trade type
+      if (tradeType) {
+        const tradeTypeLower = tradeType.toLowerCase();
+        const originalCount = results.length;
+        results = results.filter((trade: MasterDexTrade) => 
+          trade.transType.toLowerCase() === tradeTypeLower
+        );
+        console.log(`🔍 After trade type filter (${tradeType}): ${results.length} trades (filtered out ${originalCount - results.length})`);
       }
 
       // Filter by minimum value
       if (minValue) {
+        const originalCount = results.length;
         results = results.filter((trade: MasterDexTrade) => trade.tnxvalue >= minValue);
+        console.log(`🔍 After min value filter ($${minValue}): ${results.length} trades (filtered out ${originalCount - results.length})`);
       }
 
       // Sort by time descending (latest first)
@@ -107,33 +249,57 @@ export const masterdexBigSwapsTool = tool({
         results = results.slice(0, limit);
       }
 
+      // Format the results for better readability
+      const formattedResults = results.map(formatTradeData);
+
       // Group results by chain for better organization
       const resultsByChain = results.reduce((acc, trade) => {
         const chainName = trade.chain || chain || 'unknown';
         if (!acc[chainName]) {
           acc[chainName] = [];
         }
-        acc[chainName].push(trade);
+        acc[chainName].push(formatTradeData(trade));
         return acc;
-      }, {} as Record<string, MasterDexTrade[]>);
+      }, {} as Record<string, any[]>);
 
-      return {
+      const responseData = {
         success: true,
-        data: results,
+        data: formattedResults,
         dataByChain: resultsByChain,
         count: results.length,
-        message: data.message,
+        totalFetched: data.data.length,
+        message: results.length > 0 
+          ? `Found ${results.length} trades matching your criteria`
+          : `No trades found matching your criteria. Available symbols: ${availableSymbols.slice(0, 10).join(', ')}`,
         source: 'MasterDex',
         url: url,
         supportedChains: ['ethereum', 'base', 'optimism', 'polygon', 'arbitrum', 'bnb', 'blast'],
         filteredChain: chain || 'all',
         endpointUsed: chain ? `chain-specific (${chain})` : 'multi-chain',
+        filters: {
+          chain: chain || 'all',
+          token: token || 'none',
+          pair: pair || 'none',
+          minValue: minValue || 'none',
+          tradeType: tradeType || 'all',
+          limit
+        },
+        availableSymbols: availableSymbols.slice(0, 20), // Show first 20 symbols for reference
+        timestamp: new Date().toISOString(),
       };
+
+      console.log(`✅ Tool execution completed. Returning ${results.length} trades.`);
+      return responseData;
+
     } catch (error) {
+      console.error('❌ MasterDex API error:', error);
+      
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
         url: chain ? `https://api.masterdex.xyz/v1/pairs/getbigSwaps/${chain}` : 'https://api.masterdex.xyz/v1/pairs/getbigSwaps',
+        timestamp: new Date().toISOString(),
+        suggestion: 'Please try again in a few moments. If the issue persists, the MasterDex API might be temporarily unavailable.',
       };
     }
   },
