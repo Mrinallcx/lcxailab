@@ -150,6 +150,50 @@ function getUniqueSymbols(trades: MasterDexTrade[]): string[] {
   return Array.from(symbols).sort();
 }
 
+// Helper function to search for token across all chains
+async function searchTokenAcrossChains(token: string, limit: number = 20): Promise<{ results: MasterDexTrade[], chainsChecked: string[] }> {
+  const supportedChains = ['ethereum', 'base', 'optimism', 'polygon', 'arbitrum', 'bnb', 'blast'];
+  const allResults: MasterDexTrade[] = [];
+  const chainsChecked: string[] = [];
+  
+  console.log(`🔍 Searching for "${token}" across all chains...`);
+  
+  for (const chain of supportedChains) {
+    try {
+      const url = `https://api.masterdex.xyz/v1/pairs/getbigSwaps/${chain}`;
+      console.log(`  Checking ${chain}...`);
+      
+      const response = await fetchWithRetry(url);
+      const data = await response.json();
+      
+      if (data && data.data && Array.isArray(data.data)) {
+        const tokenLower = token.toLowerCase().trim();
+        const chainResults = data.data.filter((trade: MasterDexTrade) => {
+          const symbol0Lower = trade.symbol0?.toLowerCase() || '';
+          const symbol1Lower = trade.symbol1?.toLowerCase() || '';
+          return symbol0Lower.includes(tokenLower) || symbol1Lower.includes(tokenLower);
+        });
+        
+        if (chainResults.length > 0) {
+          console.log(`    ✅ Found ${chainResults.length} trades on ${chain}`);
+          allResults.push(...chainResults);
+        } else {
+          console.log(`    ❌ No trades found on ${chain}`);
+        }
+      }
+      
+      chainsChecked.push(chain);
+      
+    } catch (error) {
+      console.log(`    ⚠️ Error checking ${chain}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      chainsChecked.push(chain);
+    }
+  }
+  
+  console.log(`🔍 Total trades found across all chains: ${allResults.length}`);
+  return { results: allResults, chainsChecked };
+}
+
 export const masterdexBigSwapsTool = tool({
   description: 'Fetch big swaps (large trades) happening on multiple blockchains from MasterDex. Supports Ethereum, Base, Optimism, Polygon, Arbitrum, BNB, and Blast. Returns detailed information including pair name, trade type (buy/sell), price, value, amounts, wallet address, transaction hash, and more.',
   parameters: z.object({
@@ -162,27 +206,53 @@ export const masterdexBigSwapsTool = tool({
   }),
   execute: async ({ chain, token, pair, minValue, limit = 20, tradeType }: { chain?: string; token?: string; pair?: string; minValue?: number; limit?: number; tradeType?: string }) => {
     try {
-      // Determine the API endpoint based on whether a specific chain is requested
-      let url: string;
-      if (chain) {
-        // Use chain-specific endpoint for better reliability
-        url = `https://api.masterdex.xyz/v1/pairs/getbigSwaps/${chain}`;
-      } else {
-        // Use multi-chain endpoint when no specific chain is requested
-        url = 'https://api.masterdex.xyz/v1/pairs/getbigSwaps';
-      }
-
-      console.log(`🔍 Fetching MasterDex data from: ${url}`);
+      console.log(`🔍 Starting MasterDex search...`);
       console.log(`📋 Filters: chain=${chain || 'all'}, token=${token || 'none'}, pair=${pair || 'none'}, minValue=${minValue || 'none'}, tradeType=${tradeType || 'all'}`);
       
-      const response = await fetchWithRetry(url);
-      const data = await response.json();
+      let results: MasterDexTrade[] = [];
+      let url: string;
+      let chainsChecked: string[] = [];
       
-      if (!data || !data.data || !Array.isArray(data.data)) {
-        throw new Error('Invalid response format from MasterDex API');
+      // Smart chain selection logic
+      if (chain) {
+        // Use specific chain endpoint
+        url = `https://api.masterdex.xyz/v1/pairs/getbigSwaps/${chain}`;
+        console.log(`🔍 Using specific chain: ${chain}`);
+        
+        const response = await fetchWithRetry(url);
+        const data = await response.json();
+        
+        if (!data || !data.data || !Array.isArray(data.data)) {
+          throw new Error('Invalid response format from MasterDex API');
+        }
+        
+        results = data.data;
+        chainsChecked = [chain];
+        
+      } else if (token && !pair) {
+        // If token is specified but no chain, search across all chains
+        console.log(`🔍 Token specified without chain - searching across all chains for "${token}"`);
+        const searchResult = await searchTokenAcrossChains(token, limit);
+        results = searchResult.results;
+        chainsChecked = searchResult.chainsChecked;
+        url = 'multi-chain-search';
+        
+      } else {
+        // Use multi-chain endpoint for general searches
+        url = 'https://api.masterdex.xyz/v1/pairs/getbigSwaps';
+        console.log(`🔍 Using multi-chain endpoint`);
+        
+        const response = await fetchWithRetry(url);
+        const data = await response.json();
+        
+        if (!data || !data.data || !Array.isArray(data.data)) {
+          throw new Error('Invalid response format from MasterDex API');
+        }
+        
+        results = data.data;
+        chainsChecked = ['multi-chain'];
       }
       
-      let results: MasterDexTrade[] = data.data;
       console.log(`📊 Total trades fetched: ${results.length}`);
 
       // Get available symbols for debugging
@@ -190,7 +260,7 @@ export const masterdexBigSwapsTool = tool({
       console.log(`🏷️ Available symbols: ${availableSymbols.slice(0, 10).join(', ')}${availableSymbols.length > 10 ? '...' : ''}`);
 
       // Filter by token symbol (case-insensitive, exact or substring match)
-      if (token) {
+      if (token && chain) { // Only filter if we're using a specific chain or multi-chain endpoint
         const tokenLower = token.toLowerCase().trim();
         const originalCount = results.length;
         results = results.filter((trade: MasterDexTrade) => {
@@ -267,7 +337,7 @@ export const masterdexBigSwapsTool = tool({
         data: formattedResults,
         dataByChain: resultsByChain,
         count: results.length,
-        totalFetched: data.data.length,
+        totalFetched: results.length,
         message: results.length > 0 
           ? `Found ${results.length} trades matching your criteria`
           : `No trades found matching your criteria. Available symbols: ${availableSymbols.slice(0, 10).join(', ')}`,
@@ -275,7 +345,8 @@ export const masterdexBigSwapsTool = tool({
         url: url,
         supportedChains: ['ethereum', 'base', 'optimism', 'polygon', 'arbitrum', 'bnb', 'blast'],
         filteredChain: chain || 'all',
-        endpointUsed: chain ? `chain-specific (${chain})` : 'multi-chain',
+        endpointUsed: chain ? `chain-specific (${chain})` : url === 'multi-chain-search' ? 'cross-chain-search' : 'multi-chain',
+        chainsChecked: chainsChecked,
         filters: {
           chain: chain || 'all',
           token: token || 'none',
